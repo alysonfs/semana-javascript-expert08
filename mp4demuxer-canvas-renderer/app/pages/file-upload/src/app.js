@@ -4,18 +4,25 @@ import View from './view.js';
 const clock = new Clock()
 const view = new View()
 
+const worker = new Worker('./src/workers/worker.js', { type: 'module' })
+
+worker.onmessage = ({data}) => {
+    if(data.status !== 'done') return
+    clock.stop()
+    view.updateElapsedTime(`Process took ${took.replace('ago', '')}`)
+}
+
+// worker.postMessage('Enviado do PAI')
+
 let took = ''
 
 view.configureOnFileChange(file => {
+    worker.postMessage({file})
+    
     clock.start((time) => {
         took = time;
         view.updateElapsedTime(`Process started ${time}`)
     })
-
-    setTimeout(() => {
-        clock.stop()
-        view.updateElapsedTime(`Process took ${took.replace('ago', '')}`)
-    }, 5000)
 })
 
 // Carrega automaticamente o video
