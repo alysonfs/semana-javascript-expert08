@@ -6,13 +6,15 @@ const view = new View()
 
 const worker = new Worker('./src/workers/worker.js', { type: 'module' })
 
+worker.onerror = (error) => {
+    console.error('Error on worker', error) 
+}
+
 worker.onmessage = ({data}) => {
     if(data.status !== 'done') return
     clock.stop()
     view.updateElapsedTime(`Process took ${took.replace('ago', '')}`)
 }
-
-// worker.postMessage('Enviado do PAI')
 
 let took = ''
 
